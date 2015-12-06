@@ -1,46 +1,3 @@
- #!/usr/bin/python
-# -*- coding: utf-8 -*-
-
-from __future__ import generators
-import numpy as np
-import random
-import unicodedata
-import codecs
-
-def prefi_freqs(name_list):
-    start_freqs = {}
-    for name in name_list:
-        if len(name) > 2:
-            prefi = name[:3]
-            if prefi not in start_freqs.keys():
-                start_freqs[prefi] = [1, name]
-            else:
-                start_freqs[prefi][0] += 1
-                start_freqs[prefi].append(name)
-    return start_freqs
-
-def full_prefi_freqs(name_list):
-    start_freqs = {}
-    for line in name_list:
-        name = line[0]
-        #if (len(name) > 2) & (line[1]=='m'):
-        if (len(name) > 2):
-            prefi = name[:3]
-            if prefi not in start_freqs.keys():
-                if line[2]:
-                    start_freqs[prefi] = [1, set(line[2][0]), name]
-                else:
-                    start_freqs[prefi] = [1, set(), name]
-            else:
-                start_freqs[prefi][0] += 1
-                if line[2]:
-                    start_freqs[prefi][1].add(line[2][0])
-                start_freqs[prefi].append(name)
-
-    for pref in start_freqs:
-        start_freqs[pref][1] = ''.join(list(start_freqs[pref][1]))
-    return start_freqs
-
 def load_Pi():
     Pi = ''
     Pi_open = open('pi_10_million.txt', 'r')
@@ -54,7 +11,7 @@ def generate_name_list(filename):
     f_open = open(filename, 'r')
     f_lines = f_open.readlines()
     for name in f_lines:
-        name_list.append(name[:-1])
+        name_list.append(name[:-1].lower())
     return name_list
 
 def number_letter_dict():
@@ -76,154 +33,123 @@ def names_to_numbers(name):
     num_dict = number_letter_dict()
     coded_name = ''
     for let in name.lower():
-        print let
+        #print let
         coded_name += num_dict[let]
     return coded_name
 
 if __name__ == "__main__":
-
-    i_num = names_to_numbers('Alpha')
+    
+    #start by writing your name here (replace tony), and find out if the number version
+    #of your name can be found somewhere in the decimals of Pi
+    i_num = names_to_numbers('pascale')
     Pi = load_Pi()
     print i_num
     if i_num in Pi:
         print 'yes!', 'position = ', Pi.find(i_num)
     else:
         print 'no....'
-
+        
+    # all commented lines start with # (such as this one)
+    # the next three lines load the three name files into lists
     boy_list = generate_name_list('vhs_male_names.txt')
     girl_list = generate_name_list('vhs_female_names.txt')
     both_list = generate_name_list('vhs_names.txt')
+    
+    # We'll now print the first and last 10 names from each list:
+    print '\n first ten boy names: ', boy_list[0:10]  # it also works if you do boy_list[:10]
+    print '\n last ten boy names: ', boy_list[-10:]
+    print '\n first ten girl names: ', girl_list[0:10]  # it also works if you do boy_list[:10]
+    print '\n last ten girl names: ', girl_list[-10:]
+    print '\n first ten general names: ', both_list[0:10]  # it also works if you do boy_list[:10]
+    print '\n last ten general names: ', both_list[-10:]
+    
+    #the lists are not sorted, we'll sort the girl list and print the first five and the last five
+    girl_list.sort()
+    print '\n first and last five girl names', girl_list[:5], girl_list[-5:]
 
-    caca
-
-    names_set = set()
-    all_list = []
-
-    Pi = load_Pi()
-    #names_set.add('nori')
-    #a = names_to_numbers(names_set)
-    #print Pi.index(str(a['nori']))
-
-    prenoms_list = []
-    prenoms_open = codecs.open('Prenoms.csv','r','utf-8')
-    prenoms = prenoms_open.readlines()
-    for line in prenoms[:]:
-        #line = [x.lower() for x in line]
-        line = line.lower()
-        name = line.split(',')[:3][0]
-        if name not in names_set:
-            names_set.add(name)
-            prenoms_list.append(line.split(',')[:3])
-            all_list.append(line.split(',')[:3])
-    #for name in prenoms_list:
-        #names_set.add(name[0])
-
-    boy_france_list = []
-    boy_france_open = codecs.open('boy-names-france.txt','r','utf-8')
-    boy_france = boy_france_open.readlines()
-    for name in boy_france:
-        name = name[:-1].lower()
-        if name not in names_set:
-            names_set.add(name)
-            boy_france_list.append([name, 'm', 'french'])
-            all_list.append([name, 'm', 'french'])
-
-    gringo_name_list = []
-    gringo_set_b = set([])
-    gringo_set_g = set([])
-    gringo_open = codecs.open('baby-names.csv', 'r', 'utf-8')
-    gringo_names = gringo_open.readlines()
-    for name_line in gringo_names[3:]:
-        temp = name_line[:-1].split(',')
-        name = temp[1][1:-1].lower()
-        if name not in names_set:
-            print name
-            names_set.add(name)
-            sex = temp[3][1:-1]
-            if sex == 'boy':
-                gringo_name_list.append([name, 'm', 'english'])
-                all_list.append([name, 'm', 'english'])
-            if sex == 'girl':
-                gringo_name_list.append([name, 'm', 'english'])
-                all_list.append([name, 'f', 'english'])
-
-    boy_mexico_list = []
-    boy_mexico_open = codecs.open('boy-names-mexico','r','utf-8')
-    boy_mexico = boy_mexico_open.readlines()
-    for name in boy_mexico:
-        name = name.lower()
-        if name not in names_set:
-            names_set.add(name)
-            boy_mexico_list.append([name[:-1], 'm', 'spanish'])
-            all_list.append([name[:-1], 'm', 'spanish'])
-
-    boy_mexico2_list = []
-    boy_mexico2_open = codecs.open('boy-names-mexico2','r','utf-8')
-    boy_mexico2 = boy_mexico2_open.readlines()
-    for name in boy_mexico2:
-        name = name.lower()
-        if name not in names_set:
-            names_set.add(name)
-            boy_mexico2_list.append([name[:-1], 'm', 'spanish'])
-            all_list.append([name[:-1], 'm', 'spanish'])
-
-    girl_france_list = []
-    girl_france_open = codecs.open('girl-names-france.txt','r','utf-8')
-    girl_france = girl_france_open.readlines()
-    for name in girl_france:
-        name = name.lower()
-        if name not in names_set:
-            names_set.add(name)
-            girl_france_list.append([name[:-1], 'f', 'french'])
-            all_list.append([name[:-1], 'f', 'french'])
-
-    girl_mexico_list = []
-    girl_mexico_open = codecs.open('girl-names-mexico','r','utf-8')
-    girl_mexico = girl_mexico_open.readlines()
-    for name in girl_mexico:
-        name = name.lower()
-        if name not in names_set:
-            names_set.add(name)
-            girl_mexico_list.append([name[:-1], 'f', 'spanish'])
-            all_list.append([name[:-1], 'f', 'spanish'])
-
-    girl_mexico2_list = []
-    girl_mexico2_open = codecs.open('girl-names-mexico2','r','utf-8')
-    girl_mexico2 = girl_mexico2_open.readlines()
-    for name in girl_mexico2:
-        name = name.lower()
-        if name not in names_set:
-            names_set.add(name)
-            girl_mexico2_list.append([name[:-1], 'f', 'spanish'])
-            all_list.append([name[:-1], 'f', 'spanish'])
-
-    #all_dict = names_to_numbers(names_set)
-
-    #names = all_dict.keys()
-    #print fibo_names(names, 666), '\n'
-    #print prime_names(names)
-    #prefis = prefi_freqs(names)
-
-    franco_mexa = []
-    for line in all_list:
-        lang = line[2][:6]
-        langs = ['french', 'spanis', 'basque', 'catalan', 'portug', 'proven', 'litera', 'late r', 'breton','englis']
-        #if lang in langs:
-        #if lang != 'englis':
-        if lang:
-            franco_mexa.append(line)
-
-    counter = 0
-    prefis = full_prefi_freqs(franco_mexa)
-    for prefi in prefis.keys():
-        #if prefis[prefi][0] > 5:
-        if len(prefis[prefi][1]) >= 1:
-            names = ''
-            for name in prefis[prefi][2:]:
-                names += name+', '
-            print prefi, prefis[prefi][1],
-            print names
-            print '\n'
-            counter +=  1
-    print 'total = ', counter
-    print remove_accents(prefis[prefi][2])
+    # We'll now combine the three lists into one big list with a great trick
+    all_names_list = boy_list + girl_list + both_list   # done!
+    
+    #let's check that the length of the new list is the sum of the other three
+    print '\nlen new list = ', len(all_names_list)
+    print 'len boy list = ', len(boy_list)
+    print 'len girl list = ', len(girl_list)
+    print 'len both list = ', len(both_list)
+    print 'sum of three = ', len(boy_list) + len(girl_list) + len(both_list)
+    
+    # Since there are probably repeated names, we can get a unique list by using sets
+    all_names_set = set(all_names_list)
+    #now compare the lengths of both
+    print '\n number of unique names = ', len(all_names_set)
+    
+    # We can find the number of repeated names using sets and intersections.
+    # The number of repeated names between the boy and girl lists
+    girl_set = set(girl_list)
+    boy_set = set(boy_list)
+    repeated_names = girl_set.intersection(boy_set)
+    print '\n number of repeated names = ', len(repeated_names)
+    
+    #Pi stuff
+    #We'll now convert each name to a number (a=1, b=2, etc), and see whether they appear in the 
+    #decimals of Pi. We'll do it for the boy list, but it's the exact same thing for the other lists
+    Pi_location_dict = {}   # start a dictionary, the location on Pi will be the keys, and the names the
+                            # corresponding value
+    for name in boy_list:  # this might take a while, it might be a good idea to start with girl_list[:100]
+        number_name = names_to_numbers(name)
+        location_in_Pi = Pi.find(number_name)
+        Pi_location_dict[location_in_Pi] = name
+        
+    #now, sort the list of keys, remove the -1 value, and find the closest name
+    keys = Pi_location_dict.keys()
+    keys.sort()
+    keys.remove(-1)     # from the names that didn't match anything in Pi
+    print '\n closest position = ', keys[0]
+    print 'corresponding name = ', Pi_location_dict[keys[0]]
+    
+    #now, we'll print the 20 closest names (with the corresponding position too)
+    for key in keys[:20]:
+        print Pi_location_dict[key], key
+        
+    # To group names by the first three letters they start with, we'll make a dictionary with the
+    #3 letter prefixes as the keys, and a list of all names with that particular prefix as the value
+    #of the dictionary
+    prefix_dict = {}    # initialize dictionary
+    for name in all_names_set:  # we can use any list or set here
+        prefix_key = name[:3]
+        if prefix_key not in prefix_dict:    # if it's the first time we see the prefix, we add a new list
+            prefix_dict[prefix_key] = [name]
+        else:
+            prefix_dict[prefix_key].append(name)    #if the prefix is already there, append the name to the list
+            
+    #now, we print the first and last 5 prefixes in the dictionary, with the corresponding names
+    prefix_keys = prefix_dict.keys()
+    prefix_keys.sort()
+    for i in range(5):
+        print prefix_keys[i], prefix_dict[prefix_keys[i]]
+    for i in range(5):
+        print prefix_keys[-i-1], prefix_dict[prefix_keys[-i-1]]
+        
+    #We'll use two methods to find the prefix with the most names
+    #method one: start a counter at zero, for each prefix, count the number of names, if it's bigger 
+    #than the counter, change the counter to the new number, while keeping track of the prefix too
+    len_counter = 0
+    winning_prefix = 'zzz'
+    for prefix in prefix_dict:
+        if len(prefix_dict[prefix]) > len_counter:
+            len_counter = len(prefix_dict[prefix])
+            winning_prefix = prefix
+    print '\n prefix with most names: ', winning_prefix, ', number of names: ', len_counter
+    print prefix_dict[winning_prefix]
+    
+    #method 2: make a dictionary with the length of each list of names as the key, and the prefix as its value
+    len_dict = {}
+    for prefix in prefix_dict:
+        len_dict[len(prefix_dict[prefix])] = prefix
+    #now sort the keys and find the largest one (or largest set, this method allows us to find the top 10)
+    prefix_lengths = len_dict.keys()
+    prefix_lengths.sort()
+    print '\n prefixes with the most names: '
+    for prefix_len in prefix_lengths[-10:]:
+        print len_dict[prefix_len], prefix_len
+        
+    
